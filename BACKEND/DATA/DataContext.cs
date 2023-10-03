@@ -28,6 +28,18 @@ public class DataContext : DbContext
                 .HasForeignKey(x => x.MasterTransactionId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.ClientSetNull);
+
+            _ = a.Property(r => r.Point)
+                .IsRequired(false)
+                .HasComputedColumnSql(
+                    @"CASE
+                        WHEN MasterTransactionId = 2 AND Amount >= 10001 AND Amount <= 30000 THEN FLOOR(Amount / 1000)
+                        WHEN MasterTransactionId = 2 AND Amount > 30000 THEN FLOOR(Amount / 1000) * 2
+                        WHEN MasterTransactionId = 3 AND Amount >= 50001 AND Amount <= 100000 THEN FLOOR(Amount / 2000)
+                        WHEN MasterTransactionId = 3 AND Amount > 100000 THEN FLOOR(Amount / 2000) * 2
+                        ELSE 0
+                    END"
+                    );
         });
 
         _ = modelBuilder.Entity<MasterTransaction>(a =>

@@ -5,7 +5,6 @@ namespace BACKEND.DATA.Models;
 
 public class Transaction
 {
-
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     public int? AccountId { get; set; }
@@ -16,4 +15,7 @@ public class Transaction
     public string? DebitCreditStatus { get; set; }
     [Column(TypeName = "money")]
     public decimal? Amount { get; set; }
+
+    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+    public int? Point { get; set; }
 }
