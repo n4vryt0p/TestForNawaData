@@ -42,6 +42,13 @@ public class DataContext : DbContext
                     );
         });
 
+        _ = modelBuilder.Entity<Account>(a =>
+        {
+            _ = a.HasData(
+                new Account { Id = 1, Name = "Customer 1" }
+            );
+        });
+
         _ = modelBuilder.Entity<MasterTransaction>(a =>
         {
             _ = a.HasData(

@@ -99,6 +99,46 @@
         }
       }
     },
+    "/ddl": {
+      "get": {
+        "tags": [
+          "Dropdown"
+        ],
+        "operationId": "DropdownUserAndMaster",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllDdl"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ddlreport": {
+      "get": {
+        "tags": [
+          "Dropdown"
+        ],
+        "operationId": "DropdownUserAndMasterRepport",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllDdl"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/masterlist": {
       "get": {
         "tags": [
@@ -193,6 +233,52 @@
         }
       }
     },
+    "/reportpoints": {
+      "get": {
+        "tags": [
+          "Report"
+        ],
+        "operationId": "ReportPoints",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TransDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reportall": {
+      "get": {
+        "tags": [
+          "Report"
+        ],
+        "operationId": "ReportAll",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TransDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/transactionlist": {
       "get": {
         "tags": [
@@ -207,7 +293,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/MasterTransaction"
+                    "$ref": "#/components/schemas/TransDto"
                   }
                 }
               }
@@ -311,6 +397,40 @@
         },
         "additionalProperties": false
       },
+      "AllDdl": {
+        "type": "object",
+        "properties": {
+          "userList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListDdl"
+            },
+            "nullable": true
+          },
+          "masterList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListDdl"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ListDdl": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "MasterDto": {
         "type": "object",
         "properties": {
@@ -379,13 +499,13 @@
             "nullable": true
           },
           "amount": {
-            "type": "number",
-            "format": "double",
+            "type": "integer",
+            "format": "int64",
             "nullable": true
           },
           "points": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "nullable": true
           }
         },
@@ -424,13 +544,13 @@
             "nullable": true
           },
           "amount": {
-            "type": "number",
-            "format": "double",
+            "type": "integer",
+            "format": "int64",
             "nullable": true
           },
           "point": {
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "nullable": true
           }
         },

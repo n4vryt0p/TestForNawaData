@@ -13,9 +13,8 @@ public class Transaction
     public int? MasterTransactionId { get; set; }
     public MasterTransaction? MasterTransaction { get; set; }
     public string? DebitCreditStatus { get; set; }
-    [Column(TypeName = "money")]
-    public decimal? Amount { get; set; }
+    public long? Amount { get; set; }
 
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-    public int? Point { get; set; }
+    public long? Point { get; set; }
 }

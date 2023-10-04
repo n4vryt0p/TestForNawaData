@@ -1,14 +1,13 @@
 ﻿@page "{handler?}"
-@model IndexModel
+@model FrontEnd.Pages.MasterModel
 @{
-    ViewData["Title"] = "Home page";
 }
 @Html.AntiForgeryToken()
 <div class="row">
     <div class="col-lg-12">
         <div class="card ribbon-box">
             <div class="card-header d-flex align-items-center">
-                <h5 class="card-title mb-0 flex-grow-1">Account</h5>
+                <h5 class="card-title mb-0 flex-grow-1">Master Transaction</h5>
             </div>
             <div class="card-body">
                 <div id="oneGrid"></div>
@@ -16,7 +15,9 @@
         </div>
     </div>
 </div>
-
 @section scripts{
-    <script src="~/js/index-page.js"></script>
+   @*  <script type="text/javascript">
+        var $roles = @Html.Raw(Json.Serialize(Model.GroupRoleDdl?.Roles)), $users = @Html.Raw(Json.Serialize(Model.GroupRoleDdl?.Groups));
+    </script> *@
+    <script src="~/js/manytomany-page.js"></script>
 }

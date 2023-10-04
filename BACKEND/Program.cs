@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +49,7 @@ await dataContext.Database.EnsureCreatedAsync();
         .WithName("AccountList")
         .WithOpenApi();
 
-    _ = app.MapPost("/account/add", async ([FromBody] UserDto userdto, [FromServices] DataContext db) =>
+    _ = app.MapPost("/account/add", async (UserDto userdto, DataContext db) =>
     {
         await db.Accounts.AddAsync(new Account{Name = userdto.Name});
         await db.SaveChangesAsync();
@@ -58,7 +59,7 @@ await dataContext.Database.EnsureCreatedAsync();
     .WithName("AddAccount")
     .WithOpenApi();
 
-    _ = app.MapPut("/account/Edit", async ([FromBody] UserDto userdto, [FromServices] DataContext db) =>
+    _ = app.MapPut("/account/Edit", async (UserDto userdto,DataContext db) =>
     {
         var isHere = await db.Accounts.FirstOrDefaultAsync(t => t.Id == userdto.Id);
         if (isHere == null) return Results.NotFound();
@@ -92,7 +93,7 @@ await dataContext.Database.EnsureCreatedAsync();
         .WithName("MasterList")
         .WithOpenApi();
 
-    _ = app.MapPost("/master/add", async ([FromBody] MasterDto masterDto, DataContext db) =>
+    _ = app.MapPost("/master/add", async (MasterDto masterDto, DataContext db) =>
     {
         await db.MasterTransactions.AddAsync(new MasterTransaction {Name = masterDto.Name});
         await db.SaveChangesAsync();
@@ -102,7 +103,7 @@ await dataContext.Database.EnsureCreatedAsync();
     .WithName("AddMaster")
     .WithOpenApi();
 
-    _ = app.MapPut("/master/Edit", async ([FromBody] MasterDto masterDto, DataContext db) =>
+    _ = app.MapPut("/master/Edit", async (MasterDto masterDto, DataContext db) =>
     {
         var isHere = await db.MasterTransactions.FirstOrDefaultAsync(t => t.Id == masterDto.Id);
         if (isHere == null) return Results.NotFound();
@@ -131,7 +132,9 @@ await dataContext.Database.EnsureCreatedAsync();
     #endregion
 
     #region Transactions
-    app.MapGet("/transactionlist", async (DataContext db) => await db.MasterTransactions.AsNoTracking().ToListAsync())
+    app.MapGet("/transactionlist", async (DataContext db) => await db.Transactions.AsNoTracking().Select(t => new TransDto(
+                t.Id,t.AccountId,null,t.TransactionDate, t.MasterTransactionId, t.DebitCreditStatus,t.Amount, t.Point
+            )).ToListAsync())
         .WithTags("Transaction")
         .WithName("TransactionList")
         .WithOpenApi();
@@ -183,7 +186,51 @@ await dataContext.Database.EnsureCreatedAsync();
     .WithTags("Transaction")
     .WithName("DeleteTransaction")
     .WithOpenApi();
-    #endregion
+#endregion
+
+    #region DropdownList
+    app.MapGet("/ddl", async (DataContext db) =>
+        {
+            var uList = await db.Accounts.AsNoTracking().Select(rr => new ListDdl { Id = rr.Id, Text = rr.Name }).ToListAsync();
+            var mList = await db.MasterTransactions.AsNoTracking().Select(rr => new ListDdl { Id = rr.Id, Text = rr.Name }).ToListAsync();
+
+            return new AllDdl(uList, mList);
+        })
+    .WithTags("Dropdown")
+    .WithName("DropdownUserAndMaster")
+    .WithOpenApi();
+
+app.MapGet("/ddlreport", async (DataContext db) =>
+    {
+        var uList = await db.Accounts.AsNoTracking().Select(rr => new ListDdl { Id = rr.Id, Text = rr.Name }).ToListAsync();
+        var mList = await db.MasterTransactions.AsNoTracking().Select(rr => new ListDdl { Id = rr.Id, Text = rr.Name }).ToListAsync();
+        uList.Insert(0, new ListDdl { Id = 0, Text = "All" });
+        return new AllDdl(uList, mList);
+    })
+    .WithTags("Dropdown")
+    .WithName("DropdownUserAndMasterRepport")
+    .WithOpenApi();
+#endregion
+
+#region Reports
+app.MapGet("/reportpoints", async (DataContext db) =>
+        await db.Transactions.AsNoTracking().GroupBy(tt => tt.AccountId).Select(rr => new TransDto(
+            null,rr.Key,null,null,null,null,null,rr.Sum(d => d.Point)
+            )).ToListAsync()
+    )
+    .WithTags("Report")
+    .WithName("ReportPoints")
+    .WithOpenApi();
+
+app.MapGet("/reportall", async (DataContext db) =>
+        await db.Transactions.AsNoTracking().Select(rr => new TransDto(
+            null, rr.AccountId, rr.Account.Name, rr.TransactionDate, rr.MasterTransactionId, rr.DebitCreditStatus, rr.Amount, null
+        )).ToListAsync()
+    )
+    .WithTags("Report")
+    .WithName("ReportAll")
+    .WithOpenApi();
+#endregion
 
 #endregion
 
@@ -192,10 +239,20 @@ app.Run();
 
 #region DTO
 
-internal abstract record UserDto(int? Id, string? Name);
+internal record UserDto(int? Id, string? Name);
 
-internal abstract record MasterDto(int? Id, string? Name);
+internal record MasterDto(int? Id, string? Name);
 
-internal abstract record TransDto(int? Id, int? AccountId, string? AccountName, DateTime? TransactionDate, int? MasterTransactionId, string? DebitCreditStatus, decimal? Amount, int? Points);
+internal record TransDto(int? Id, int? AccountId, string? AccountName, DateTime? TransactionDate, int? MasterTransactionId, string? DebitCreditStatus, long? Amount, long? Points);
+
+internal record ReportDto(int? AccountId, DateTime FromDate, DateTime ToDate);
+
+internal record AllDdl(IEnumerable<ListDdl>? UserList, IEnumerable<ListDdl>? MasterList);
+
+public class ListDdl
+{
+    public int Id { get; set; }
+    public string? Text { get; set; }
+}
 
 #endregion

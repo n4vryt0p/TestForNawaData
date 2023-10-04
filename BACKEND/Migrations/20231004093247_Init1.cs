@@ -49,8 +49,8 @@ namespace BACKEND.Migrations
                     TransactionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     MasterTransactionId = table.Column<int>(type: "int", nullable: true),
                     DebitCreditStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Amount = table.Column<decimal>(type: "money", nullable: true),
-                    Point = table.Column<int>(type: "int", nullable: true, computedColumnSql: "CASE\r\n                        WHEN MasterTransactionId = 2 AND Amount >= 10001 AND Amount <= 30000 THEN FLOOR(Amount / 1000)\r\n                        WHEN MasterTransactionId = 2 AND Amount > 30000 THEN FLOOR(Amount / 1000) * 2\r\n                        WHEN MasterTransactionId = 3 AND Amount >= 50001 AND Amount <= 100000 THEN FLOOR(Amount / 2000)\r\n                        WHEN MasterTransactionId = 3 AND Amount > 100000 THEN FLOOR(Amount / 2000) * 2\r\n                        ELSE 0\r\n                    END")
+                    Amount = table.Column<long>(type: "bigint", nullable: true),
+                    Point = table.Column<long>(type: "bigint", nullable: true, computedColumnSql: "CASE\r\n                        WHEN MasterTransactionId = 2 AND Amount >= 10001 AND Amount <= 30000 THEN FLOOR(Amount / 1000)\r\n                        WHEN MasterTransactionId = 2 AND Amount > 30000 THEN FLOOR(Amount / 1000) * 2\r\n                        WHEN MasterTransactionId = 3 AND Amount >= 50001 AND Amount <= 100000 THEN FLOOR(Amount / 2000)\r\n                        WHEN MasterTransactionId = 3 AND Amount > 100000 THEN FLOOR(Amount / 2000) * 2\r\n                        ELSE 0\r\n                    END")
                 },
                 constraints: table =>
                 {
@@ -66,6 +66,11 @@ namespace BACKEND.Migrations
                         principalTable: "MasterTransactions",
                         principalColumn: "Id");
                 });
+
+            migrationBuilder.InsertData(
+                table: "Accounts",
+                columns: new[] { "Id", "Name" },
+                values: new object[] { 1, "Customer 1" });
 
             migrationBuilder.InsertData(
                 table: "MasterTransactions",

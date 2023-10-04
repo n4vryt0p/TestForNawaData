@@ -29,50 +29,17 @@ $(document).ready(function () {
         },
         columns: [
             {
-                dataField: 'userName',
-                caption: 'User Name',
-                validationRules: [{
-                    type: 'required',
-                    message: 'User Name harus diisi.',
-                }],
+                dataField: 'id',
+                caption: 'ID',
+                width: 50
             },
             {
-                dataField: 'pass',
-                caption: 'Password',
+                dataField: 'name',
+                caption: 'Account Name',
                 validationRules: [{
                     type: 'required',
-                    message: 'Password harus diisi.',
-                }],
-                visible: false
-            },
-            {
-                dataField: 'email',
-                caption: 'Email',
-                validationRules: [{
-                    type: 'required',
-                    message: 'Email harus diisi.',
-                }],
-            },
-            {
-                dataField: 'namaLengkap',
-                caption: 'Nama Lengkap',
-                validationRules: [{
-                    type: 'required',
-                    message: 'Nama Lengkap harus diisi.',
-                }],
-            },
-            {
-                dataField: 'noKtp',
-                caption: 'No. KTP',
-                dataType: "number",
-                validationRules: [{
-                    type: 'required',
-                    message: 'No. KTP harus diisi.',
-                }],
-            },
-            {
-                dataField: 'alamat',
-                caption: 'Alamat'
+                    message: 'Name harus diisi.',
+                }]
             },
         ],
         editing: {
@@ -81,7 +48,7 @@ $(document).ready(function () {
             allowUpdating: true,
             allowDeleting: true,
             popup: {
-                title: 'User Info',
+                title: 'Account Info',
                 showTitle: true,
                 width: 700,
                 height: 525,
@@ -90,20 +57,8 @@ $(document).ready(function () {
                 items: [
                     {
                         itemType: 'group',
-                        colCount: 2,
                         colSpan: 2,
-                        items: ['userName', 'pass']
-                    },
-                    {
-                        itemType: 'group',
-                        colSpan: 2,
-                        items: ['email']
-                    },
-                    {
-                        itemType: 'group',
-                        caption: "Detail",
-                        colSpan: 2,
-                        items: ['namaLengkap', 'noKtp', 'alamat'],
+                        items: ['name']
                     }
                 ],
             },

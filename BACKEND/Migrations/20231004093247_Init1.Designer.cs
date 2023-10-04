@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BACKEND.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231003102635_Init1")]
+    [Migration("20231004093247_Init1")]
     partial class Init1
     {
         /// <inheritdoc />
@@ -39,6 +39,13 @@ namespace BACKEND.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Accounts");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Customer 1"
+                        });
                 });
 
             modelBuilder.Entity("BACKEND.DATA.Models.MasterTransaction", b =>
@@ -85,8 +92,8 @@ namespace BACKEND.Migrations
                     b.Property<int?>("AccountId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("Amount")
-                        .HasColumnType("money");
+                    b.Property<long?>("Amount")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("DebitCreditStatus")
                         .HasColumnType("nvarchar(max)");
@@ -94,9 +101,9 @@ namespace BACKEND.Migrations
                     b.Property<int?>("MasterTransactionId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Point")
+                    b.Property<long?>("Point")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("int")
+                        .HasColumnType("bigint")
                         .HasComputedColumnSql("CASE\r\n                        WHEN MasterTransactionId = 2 AND Amount >= 10001 AND Amount <= 30000 THEN FLOOR(Amount / 1000)\r\n                        WHEN MasterTransactionId = 2 AND Amount > 30000 THEN FLOOR(Amount / 1000) * 2\r\n                        WHEN MasterTransactionId = 3 AND Amount >= 50001 AND Amount <= 100000 THEN FLOOR(Amount / 2000)\r\n                        WHEN MasterTransactionId = 3 AND Amount > 100000 THEN FLOOR(Amount / 2000) * 2\r\n                        ELSE 0\r\n                    END");
 
                     b.Property<DateTime?>("TransactionDate")

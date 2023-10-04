@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using DevExtreme.AspNet.Data;
 using FRONTEND;
 using FRONTEND.Services;
@@ -9,24 +9,24 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace FrontEnd.Pages;
 
 [AllowAnonymous]
-public class IndexModel : PageModel
+public class MasterModel : PageModel
 {
     private readonly IPadepokanManage _manageEngineApi;
     private readonly IJsonOptions _jOpt;
 
-    public IndexModel(IPadepokanManage manageEngineApi, IJsonOptions jOpt)
+    public MasterModel(IPadepokanManage manageEngineApi, IJsonOptions jOpt)
     {
         _manageEngineApi = manageEngineApi;
         _jOpt = jOpt;
     }
 
-    public void OnGet()
+    public async Task OnGet()
     {
     }
 
     public async Task<IActionResult> OnGetReadAsync(DataSourceLoadOptionsBase set)
     {
-        var response = await _manageEngineApi.Ready().AccountListAsync();
+        var response = await _manageEngineApi.Ready().MasterListAsync();
 
         return new JsonResult(DataSourceLoader.Load(response, set));
     }
@@ -36,9 +36,9 @@ public class IndexModel : PageModel
         string? grup = collection["values"].FirstOrDefault();
         if (!string.IsNullOrEmpty(grup))
         {
-            var rdto = JsonSerializer.Deserialize<UserDto>(grup, _jOpt.JOpts());
+            var rdto = JsonSerializer.Deserialize<MasterDto>(grup, _jOpt.JOpts());
 
-            await _manageEngineApi.Ready().AddAccountAsync(rdto);
+            await _manageEngineApi.Ready().AddMasterAsync(rdto);
         }
     }
 
@@ -46,17 +46,33 @@ public class IndexModel : PageModel
     {
         string? grupId = collection["key"].FirstOrDefault();
         string? grup = collection["values"].FirstOrDefault();
-        if (grup == null || string.IsNullOrEmpty(grupId))
+        if (grup == null || grupId == null)
         {
             return BadRequest("Data Error");
         }
 
-        var rdto = JsonSerializer.Deserialize<UserDto>(grup, _jOpt.JOpts());
+        var rdto = JsonSerializer.Deserialize<MasterDto>(grup, _jOpt.JOpts());
         rdto!.Id = Convert.ToInt32(grupId);
 
-        await _manageEngineApi.Ready().EditAccountAsync(rdto);
+        await _manageEngineApi.Ready().EditMasterAsync(rdto);
         return null;
     }
+
+    //public async Task<IActionResult?> OnPutEditUserAsync(IFormCollection collection)
+    //{
+
+    //    string? grupId = collection["key"].FirstOrDefault();
+    //    string? grup = collection["values"].FirstOrDefault();
+    //    if (grup == null || grupId == null)
+    //    {
+    //        return BadRequest("Data Error");
+    //    }
+
+    //    var rdto = JsonSerializer.Deserialize<UserDto>(grup, _jOpt.JOpts());
+
+    //    await _manageEngineApi.Ready().UpdateUser2Async(Convert.ToInt32(grupId), rdto);
+    //    return null;
+    //}
 
     public async Task<IActionResult?> OnDeleteDeleteAsync(IFormCollection collection)
     {
@@ -68,7 +84,7 @@ public class IndexModel : PageModel
                 return BadRequest("Data Error");
             }
 
-            await _manageEngineApi.Ready().DeleteAccountAsync(Convert.ToInt32(grupId));
+            await _manageEngineApi.Ready().DeleteMasterAsync(Convert.ToInt32(grupId));
             return null;
         }
         catch
